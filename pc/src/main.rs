@@ -10,10 +10,19 @@ fn main() {
     println!("Samples per channel in one 10 ms frame: {samples_per_frame}");
     println!("Bytes in one frame: {frame_bytes}");
 
+
+    let frame_bytes_vec = build_one_frame(samples_per_frame, frequency, sample_rate);
+
+    println!("frame_bytes_vec[4] = {}", frame_bytes_vec[4]);
+    println!("frame_bytes_vec[5] = {}", frame_bytes_vec[5]);
+    
+}
+
+fn build_one_frame(samples_per_frame: u32, frequency: f32, sample_rate: u32) -> Vec<u8> {
     let mut samples = Vec::new();
     for n in 0..samples_per_frame {
-        let formula = 2.0 * std::f32::consts::PI * frequency * (n as f32) / (sample_rate as f32);
-        let sample = (formula.sin() * 10000.0) as i16;
+        let phase = 2.0 * std::f32::consts::PI * frequency * (n as f32) / (sample_rate as f32);
+        let sample = (phase.sin() * 10000.0) as i16;
         samples.push(sample);
         samples.push(sample);
     }
@@ -23,8 +32,5 @@ fn main() {
         let bytes = x.to_le_bytes();
         frame_bytes_vec.extend_from_slice(&bytes);
     }
-
-    println!("frame_bytes_vec[4] = {}", frame_bytes_vec[4]);
-    println!("frame_bytes_vec[5] = {}", frame_bytes_vec[5]);
-    
+    frame_bytes_vec
 }
